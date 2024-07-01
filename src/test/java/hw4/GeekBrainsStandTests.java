@@ -1,5 +1,6 @@
 package hw4;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.hw4.LoginPage;
 import org.hw4.MainPage;
 import org.junit.jupiter.api.AfterEach;
@@ -10,8 +11,13 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.remote.*;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -23,33 +29,57 @@ import io.github.bonigarcia.wdm.WebDriverManager;
  */
 public class GeekBrainsStandTests {
 
-    private WebDriver driver;
+    private RemoteWebDriver driver;
+    //private WebDriver driver;
     private WebDriverWait wait;
     private LoginPage loginPage;
     private MainPage mainPage;
-
     private static String USERNAME;
     private static String PASSWORD;
 
     @BeforeAll
     public static void setupClass() {
-        WebDriverManager.chromedriver().setup();
+        Dotenv dotenv = Dotenv.load();
+        //WebDriverManager.chromedriver().setup();
         // Помещаем в переменные окружения путь до драйвера
         //System.setProperty("webdriver.chrome.driver", "src\\test\\resources\\chromedriver.exe");
         // mvn clean test -Dgeekbrains_username=USER -Dgeekbrains_password=PASS
-        USERNAME = System.getProperty("geekbrains_username", System.getenv("geekbrains_username"));
-        PASSWORD = System.getProperty("geekbrains_password", System.getenv("geekbrains_password"));
+        USERNAME = dotenv.get("geekbrains_username");
+        PASSWORD = dotenv.get("geekbrains_password");
+        //USERNAME = System.getProperty("geekbrains_username", System.getenv("geekbrains_username"));
+        //PASSWORD = System.getProperty("geekbrains_password", System.getenv("geekbrains_password"));
     }
-
     @BeforeEach
-    public void setupTest() {
-        ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.addArguments("--start-maxized");
+    public void setupTest() throws MalformedURLException {
+        ChromeOptions options = new ChromeOptions();
+        options.setCapability("browserVersion", "124.0");
+        options.setCapability("selenoid:options", new HashMap<String, Object>() {{
+            /* How to add test badge */
+            put("name", "Test badge...");
+
+            /* How to set session timeout */
+            put("sessionTimeout", "15m");
+
+            /* How to set timezone */
+            put("env", new ArrayList<String>() {{
+                add("TZ=UTC");
+            }});
+
+            /* How to add "trash" button */
+            put("labels", new HashMap<String, Object>() {{
+                put("manual", "true");
+            }});
+
+            /* How to enable video recording */
+            put("enableVideo", true);
+        }});
+        //options.addArguments("--start-maxized");
         // Создаём экземпляр драйвера
-        driver = new ChromeDriver(chromeOptions);
+        driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), options);
+        //driver = new ChromeDriver(options);
         wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         // Растягиваем окно браузера на весь экран
-        driver.manage().window().maximize();
+        //driver.manage().window().maximize();
         // Навигация на https://test-stand.gb.ru/login
         driver.get("https://test-stand.gb.ru/login");
         // Объект созданного Page Object
