@@ -61,9 +61,8 @@ public class ProfilePageTest {
         profilePage = page(ProfilePage.class);
         assertTrue(profilePage.getTitlePageText().contains("Profile"));
         profilePage.openOptionsWindow();
-        //sleep(1000l);
+        sleep(1000l);
         profilePage.setDateOfBirthday(DATE);
-        sleep(5000L);
         profilePage.setPhoneNumber("79812346588");
         profilePage.clickSaveButtonOnEditForm();
         profilePage.clickCloseButtonForm();
