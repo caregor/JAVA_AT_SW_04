@@ -33,7 +33,9 @@ public class ProfilePageTest {
 
     @BeforeAll
     public static void setupClass() {
-        WebDriverManager.chromedriver().setup();
+        Configuration.remote = "http://localhost:4444/wd/hub";
+        Configuration.browser = "chrome";
+       // WebDriverManager.chromedriver().setup();
         Dotenv dotenv = Dotenv.load();
         DATE = LocalDate.of(1997, 6,5);
         USERNAME = dotenv.get("geekbrains_username");
@@ -42,9 +44,7 @@ public class ProfilePageTest {
 
     @BeforeEach
     void init(){
-        Configuration.fastSetValue = true;
-       // Configuration.browser = "chrome";
-       // Configuration.remote = "https://localhost:4444/wd/hub";
+        //Configuration.fastSetValue = true;
         loginPage = page(LoginPageSelenide.class);
         open("https://test-stand.gb.ru/login");
     }
