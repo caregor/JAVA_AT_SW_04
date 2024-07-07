@@ -4,8 +4,9 @@ import com.codeborne.selenide.Configuration;
 import static com.codeborne.selenide.Selenide.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.cdimascio.dotenv.Dotenv;
-import org.hw4.LoginPage;
-import org.hw4.MainPage;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
 import org.hw4.ProfilePage;
 import org.hw4.selenide.LoginPageSelenide;
 import org.hw4.selenide.MainPageSelenide;
@@ -19,6 +20,8 @@ import java.time.format.DateTimeFormatter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Epic(value = "Тестирование Страницы профиля")
+@Feature(value = "Промежуточная аттестация")
 public class ProfilePageTest {
     private static String USERNAME;
     private static String PASSWORD;
@@ -47,12 +50,14 @@ public class ProfilePageTest {
     }
 
     @Test
+    @Description("Тест невалидных данных для входа")
     public void testLoginWithEmptyFields() {
         loginPage.clickLoginButton();
         assertEquals("401 Invalid credentials.", loginPage.getErrorBlockText());
     }
 
     @Test
+    @Description("Тест изменение значения в поле Date of birth")
     void testChangeBirthday(){
         loginPage.login(USERNAME, PASSWORD);
         mainPage = page(MainPageSelenide.class);
